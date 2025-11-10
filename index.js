@@ -1,6 +1,6 @@
 const express = require('express')
 const cors =require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 const port =process.env.PORT || 3000;
 
@@ -30,14 +30,69 @@ async function run() {
 
     const db = client.db('FinEase-db');
     const transactionCollection = db.collection('transaction');
+    const userCollection =db.collection('users')
+
+    // user post
+    app.post('/users', async(req, res)=>{
+      const newUser = req.body;
+      const email = req.body.email;
+      const query = {email: email}
+      const existingUser = await userCollection.findOne(query);
+      if(existingUser){
+        res.send({message: 'user already exits. do not insert again'})
+      }
+      else{
+        const result = await userCollection.insertOne(newUser);
+        res.send(result)
+      }
+    })
 
     // post transaction to DB
     app.post('/transactions', async (req, res)=>{
-      const newTransaction = req.body;
+
+       const newTransaction = req.body;
       const result = await transactionCollection.insertOne(newTransaction);
+      res.send(result);
+    
+    })
+
+    // get transaction
+
+    app.get('/transactions', async(req, res)=>{
+      const cursor =transactionCollection.find();
+      const result =await cursor.toArray();
       res.send(result);
     })
 
+
+    app.get('/transactions/:email', async(req, res )=>{
+      const email = req.params.email;
+      const query ={email: email}
+      const result = await transactionCollection.findOne(query);
+      res.send(result)
+
+    })
+
+    // update transaction
+    app.patch('/transactions/:id',async(req, res)=>{
+      const id =req.params.id;
+      const updateTransaction = req.body;
+      const query = { _id: new ObjectId(id)}
+      const update ={
+        $set:{
+          name: updateTransaction.name,
+          email: updateTransaction.email
+        }
+      }
+    })
+
+    // delete transaction
+    app.delete('/transactions/:id',async(req, res)=>{
+      const id =req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await transactionCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
