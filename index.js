@@ -28,8 +28,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    // const db = client.db('FinEase-db');
-    // const 
+    const db = client.db('FinEase-db');
+    const transactionCollection = db.collection('transaction');
+
+    // post transaction to DB
+    app.post('/transactions', async (req, res)=>{
+      const newTransaction = req.body;
+      const result = await transactionCollection.insertOne(newTransaction);
+      res.send(result);
+    })
 
 
 
