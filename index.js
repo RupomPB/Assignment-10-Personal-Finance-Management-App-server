@@ -103,8 +103,11 @@ async function run() {
       const query = { _id: new ObjectId(id)}
       const update ={
         $set:{
-          name: updateTransaction.name,
-          email: updateTransaction.email
+          type: updateTransaction.type,
+          category: updateTransaction.category,
+          amount:updateTransaction.amount,
+          description: updateTransaction.description,
+          date: updateTransaction.date,
         },
       }
       const result= await transactionCollection.updateOne(query, update);
