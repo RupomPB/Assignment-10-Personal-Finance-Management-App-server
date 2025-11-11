@@ -51,6 +51,9 @@ async function run() {
     app.post('/transactions', async (req, res)=>{
 
        const newTransaction = req.body;
+
+       newTransaction.createdAt = new Date();
+
       const result = await transactionCollection.insertOne(newTransaction);
       res.send(result);
     
@@ -59,20 +62,27 @@ async function run() {
     // get transaction with sort
 
     app.get('/transactions', async(req, res)=>{
-      const email =req.query.email;
+      const {email, sort} =req.query;
       const query ={};
       if(email){
         query.email = email;
       }
 
-      let sortOption = {date: -1};
+      let sortOption = {createdAt: -1};
+
       if(sort === "amount"){
         sortOption ={amount: -1}
       }
+      if(sort === 'date'){
+        sortOption={date: -1};
+      }
+      if(sort === 'none'){
+        sortOption ={};
+      }
 
-      const cursor =transactionCollection.find(query).sort({
+      const cursor =transactionCollection.find(query).sort(
         sortOption
-      });
+      );
       const result =await cursor.toArray();
       res.status(200).send(result);
     })
