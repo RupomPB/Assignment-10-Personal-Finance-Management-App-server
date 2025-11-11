@@ -56,43 +56,57 @@ async function run() {
     
     })
 
-    // get transaction
+    // get transaction with sort
 
     app.get('/transactions', async(req, res)=>{
-      const cursor =transactionCollection.find();
+      const email =req.query.email;
+      const query ={};
+      if(email){
+        query.email = email;
+      }
+
+      let sortOption = {date: -1};
+      if(sort === "amount"){
+        sortOption ={amount: -1}
+      }
+
+      const cursor =transactionCollection.find(query).sort({
+        sortOption
+      });
       const result =await cursor.toArray();
-      res.send(result);
+      res.status(200).send(result);
     })
 
-
-    app.get('/transactions/:email', async(req, res )=>{
-      const email = req.params.email;
-      const query ={email: email}
-      const result = await transactionCollection.findOne(query);
-      res.send(result)
-
+    // get transaction by id
+    app.get('/transactions/:id', async(req, res )=>{
+     const {id} =req.params;
+     const query ={_id: new ObjectId(id)};
+     const result= await transactionCollection.findOne(query);
+     res.status(200).send(result)
     })
 
     // update transaction
-    app.patch('/transactions/:id',async(req, res)=>{
-      const id =req.params.id;
-      const updateTransaction = req.body;
-      const query = { _id: new ObjectId(id)}
-      const update ={
-        $set:{
-          name: updateTransaction.name,
-          email: updateTransaction.email
-        }
-      }
-    })
+    // app.patch('/transactions/:id',async(req, res)=>{
+    //   const id =req.params.id;
+    //   const updateTransaction = req.body;
+    //   const query = { _id: new ObjectId(id)}
+    //   const update ={
+    //     $set:{
+    //       name: updateTransaction.name,
+    //       email: updateTransaction.email
+    //     },
+    //   }
+    //   const result= await transactionCollection.updateOne(query, update);
+    //   res.send(result);
+    // })
 
     // delete transaction
-    app.delete('/transactions/:id',async(req, res)=>{
-      const id =req.params.id;
-      const query = {_id: new ObjectId(id)};
-      const result = await transactionCollection.deleteOne(query);
-      res.send(result);
-    })
+    // app.delete('/transactions/:id',async(req, res)=>{
+    //   const id =req.params.id;
+    //   const query = {_id: new ObjectId(id)};
+    //   const result = await transactionCollection.deleteOne(query);
+    //   res.send(result);
+    // })
 
 
 
