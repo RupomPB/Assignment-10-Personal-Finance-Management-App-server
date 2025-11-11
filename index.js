@@ -1,7 +1,9 @@
 const express = require('express')
 const cors =require('cors')
+require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
+console.log(process.env)
 const port =process.env.PORT || 3000;
 
 
@@ -10,9 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 
-// uFfgmxpRlQ1w3kE7
-
-const uri = "mongodb+srv://FinEase-db:uFfgmxpRlQ1w3kE7@cluster0.xnvicz3.mongodb.net/?appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xnvicz3.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -80,11 +80,12 @@ async function run() {
         sortOption ={};
       }
 
-      const cursor =transactionCollection.find(query).sort(
-        sortOption
-      );
-      const result =await cursor.toArray();
-      res.status(200).send(result);
+      const cursor =transactionCollection.find(query)
+        const transactions = Object.keys(sortOption).length > 0 
+      ? await cursor.sort(sortOption).toArray() 
+      : await cursor.toArray();
+
+      res.status(200).send(transactions);
     })
 
     // get transaction by id
