@@ -97,19 +97,19 @@ async function run() {
     })
 
     // update transaction
-    // app.patch('/transactions/:id',async(req, res)=>{
-    //   const id =req.params.id;
-    //   const updateTransaction = req.body;
-    //   const query = { _id: new ObjectId(id)}
-    //   const update ={
-    //     $set:{
-    //       name: updateTransaction.name,
-    //       email: updateTransaction.email
-    //     },
-    //   }
-    //   const result= await transactionCollection.updateOne(query, update);
-    //   res.send(result);
-    // })
+    app.patch('/transactions/:id',async(req, res)=>{
+      const id =req.params.id;
+      const updateTransaction = req.body;
+      const query = { _id: new ObjectId(id)}
+      const update ={
+        $set:{
+          name: updateTransaction.name,
+          email: updateTransaction.email
+        },
+      }
+      const result= await transactionCollection.updateOne(query, update);
+      res.send(result);
+    })
 
     // delete transaction
     app.delete('/transactions/:id',async(req, res)=>{
