@@ -88,6 +88,19 @@ async function run() {
       res.status(200).send(transactions);
     })
 
+    // data for chart 
+
+    app.get('/report-data', async(req, res)=>{
+      const email = req.query.email;
+      const query ={};
+      if(email){
+        query.email = email;
+      }
+      const cursor = transactionCollection.find(query);
+      const result = await cursor.toArray();
+      res.status(200).send(result);
+    })
+
     // get transaction by id
     app.get('/transactions/:id', async(req, res )=>{
      const {id} =req.params;
@@ -99,15 +112,15 @@ async function run() {
     // update transaction
     app.patch('/transactions/:id',async(req, res)=>{
       const id =req.params.id;
-      const updateTransaction = req.body;
+      const updateInfo = req.body;
       const query = { _id: new ObjectId(id)}
       const update ={
         $set:{
-          type: updateTransaction.type,
-          category: updateTransaction.category,
-          amount:updateTransaction.amount,
-          description: updateTransaction.description,
-          date: updateTransaction.date,
+          type: updateInfo.type,
+          category: updateInfo.category,
+          amount:updateInfo.amount,
+          description: updateInfo.description,
+          date: updateInfo.date,
         },
       }
       const result= await transactionCollection.updateOne(query, update);
