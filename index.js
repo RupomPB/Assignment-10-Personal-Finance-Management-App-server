@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const db = client.db('FinEase-db');
     const transactionCollection = db.collection('transaction');
@@ -68,6 +68,7 @@ async function run() {
         query.email = email;
       }
 
+      console.log(query)
       let sortOption = {createdAt: -1};
 
       if(sort === "amount"){
@@ -79,12 +80,14 @@ async function run() {
       if(sort === 'none'){
         sortOption ={};
       }
+      // console.log(sortOption)
 
-      const cursor =transactionCollection.find(query)
+      const cursor =  transactionCollection.find(query)
+      // console.log(cursor)
         const transactions = Object.keys(sortOption).length > 0 
       ? await cursor.sort(sortOption).toArray() 
       : await cursor.toArray();
-
+      // res.send(cursor)
       res.status(200).send(transactions);
     })
 
@@ -142,7 +145,7 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
